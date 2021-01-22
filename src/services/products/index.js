@@ -2,6 +2,19 @@ const express = require("express");
 const Products = require("../../database").Products; //BECAUSE DATABASE/INDEX.JS IS EXPORTING A MODELS OBJECT, WE CAN CALL THE Article MODEL STRAIGHT FROM THIS OBJECT
 const Review = require("../../database").Review;
 const Category = require("../../database").Category;
+const multer = require("multer")
+
+const cloudinary = require("../../cloudinary")
+const { CloudinaryStorage } = require("multer-storage-cloudinary")
+
+
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: "samples"
+    }
+})
+const cloudinaryMulter = multer({ storage: storage })
 
 const router = express.Router();
 
@@ -41,7 +54,7 @@ router.get("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
     try {
-        await Product.destroy({ where: { id: req.params.id } }); //.destroy DESTROYS ROWS. CAN DESTROY MULTIPLE BASED ON FILTER. WILL DESTRY ALL WITHOUT A FILTER
+        await Products.destroy({ where: { id: req.params.id } }); //.destroy DESTROYS ROWS. CAN DESTROY MULTIPLE BASED ON FILTER. WILL DESTRY ALL WITHOUT A FILTER
         res.send("product destroyed");
     } catch (error) {
         console.log(error);
@@ -51,9 +64,22 @@ router.delete("/:id", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
     try {
-        const alteredProduct = await Product.update(req.body, {
+        const alteredProduct = await Products.update(req.body, {
             where: { id: req.params.id },
             include: [Review, Category],
+            returning: true,
+        });
+        res.send(alteredProduct);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Uh oh, something broke :(");
+    }
+});
+
+router.post("/:id/upload", cloudinaryMulter.single("productImage"), async (req, res) => {
+    try {
+        const alteredProduct = await Products.update({ imgurl: req.file.path }, {
+            where: { id: req.params.id },
             returning: true,
         });
         res.send(alteredProduct);

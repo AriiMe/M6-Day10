@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
         { timestamps: true }
     );
     Category.associate = (models) => {
-        Category.hasMany(models.Products); //ONE-TO-MANY: REVIEW IS MANY, ARTICLE IS ONE
+        Category.hasMany(models.Products); //category belongs to a single product
     };
     return Category;
 };
