@@ -27,15 +27,13 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.FLOAT,
                 allowNull: false,
             },
-            category: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
+
         },
         { timestamps: true }
     );
     Products.associate = (models) => {
         Products.hasMany(models.Review); //ONE-TO-MANY: ARTICLE IS ONE, REVIEW IS MANY
+        Products.belongsTo(models.Category)
     };
     return Products;
 };
