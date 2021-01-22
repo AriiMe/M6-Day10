@@ -1,6 +1,6 @@
 const express = require("express");
 const Review = require("../../database").Review; //BECAUSE DATABASE/INDEX.JS IS EXPORTING A MODELS OBJECT, WE CAN CALL THE Review MODEL STRAIGHT FROM THIS OBJECT
-const Product = require("../../database").Product;
+const Products = require("../../database").Products;
 
 
 const router = express.Router();
@@ -18,7 +18,7 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
     try {
         const allReviews = await Review.findAll({
-            include: [Product],
+            include: [Products],
         }); //.findAll RETURNS ALL OF THE ReviewS
         res.send(allReviews);
     } catch (error) {
@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const singleReview = await Review.findByPk(req.params.id, {
-            include: [Product],
+            include: [Products],
         }); //.findByPk RETURNS THE Review WITH THE MATCHING ID
         res.send(singleReview);
     } catch (error) {
